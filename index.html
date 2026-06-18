@@ -133,7 +133,7 @@ canvas#sig { width: 100%; height: 170px; border: 1px solid var(--border); border
 </div>
 
 <script>
-const FORM_ACTION = 'https://docs.google.com/forms/d/e/1FAIpQLSdib631_dJ95AUgdBXmD9dZOX2_n0WNJqbo2ouJzRprytsdYw/formResponse';
+const FORMSPREE = 'https://formspree.io/f/mrevwgdz';
 
 const canvas = document.getElementById('sig');
 const ctx = canvas.getContext('2d');
@@ -177,10 +177,7 @@ canvas.addEventListener('touchend', () => drawing = false);
 function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); hasSig = false; setStatus(false); }
 
 const today = new Date();
-const yyyy = today.getFullYear();
-const mm = String(today.getMonth() + 1).padStart(2, '0');
-const dd = String(today.getDate()).padStart(2, '0');
-document.getElementById('date').value = yyyy + '-' + mm + '-' + dd;
+document.getElementById('date').value = today.toISOString().split('T')[0];
 
 async function submitForm() {
   const ime = document.getElementById('ime').value.trim();
@@ -198,18 +195,15 @@ async function submitForm() {
   btn.disabled = true;
   btn.textContent = 'Изпращане...';
 
-  const body = new FormData();
-  body.append('entry.1375720994', ime);
-  body.append('entry.1702144674', grad);
-  body.append('entry.1402672427', tel);
-  body.append('entry.1585145973', date);
+  const sigData = canvas.toDataURL('image/png');
 
   try {
-    await fetch(FORM_ACTION, {
+    const res = await fetch(FORMSPREE, {
       method: 'POST',
-      mode: 'no-cors',
-      body: body
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({ ime, grad, tel, date, podpis: sigData })
     });
+    if (!res.ok) throw new Error('Грешка');
   } catch(err) {
     console.error(err);
   }
