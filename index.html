@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Информирано съгласие — CarbonCore</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --black: #0a0a0a; --surface: #141414; --surface2: #1c1c1c; --border: #2a2a2a; --cyan: #00e5cc; --cyan-dim: rgba(0,229,204,0.12); --text: #f0f0f0; --muted: #666; --muted2: #444; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; font-weight: 300; min-height: 100vh; }
+.page { max-width: 580px; margin: 0 auto; padding: 3rem 1.5rem 4rem; }
+.header { margin-bottom: 3rem; border-bottom: 1px solid var(--border); padding-bottom: 1.5rem; }
+.logo { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 0.08em; color: var(--text); line-height: 1; }
+.logo span { color: var(--cyan); }
+.tagline { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); margin-top: 4px; }
+.doc-title { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.06em; color: var(--text); margin-top: 1.5rem; }
+.section-label { font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--cyan); margin-bottom: 1rem; font-weight: 500; }
+.field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.field-full { margin-bottom: 12px; }
+label { display: block; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; font-weight: 500; }
+input[type=text], input[type=tel], input[type=date] { width: 100%; height: 48px; padding: 0 14px; font-size: 15px; font-family: 'DM Sans', sans-serif; font-weight: 300; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); color: var(--text); outline: none; transition: border-color 0.2s; -webkit-appearance: none; appearance: none; color-scheme: dark; }
+input:focus { border-color: var(--cyan); background: var(--surface2); }
+input::placeholder { color: var(--muted2); }
+.divider { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+.declaration-box { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--cyan); border-radius: 4px; padding: 1.5rem; margin-bottom: 2rem; }
+.declaration-box ol { padding-left: 1.25rem; counter-reset: item; list-style: none; }
+.declaration-box li { font-size: 13.5px; line-height: 1.75; color: #bbb; margin-bottom: 1rem; padding-left: 0.25rem; counter-increment: item; position: relative; }
+.declaration-box li::before { content: counter(item) "."; color: var(--cyan); font-weight: 500; position: absolute; left: -1.25rem; font-size: 12px; }
+.declaration-box li:last-child { margin-bottom: 0; }
+.sig-wrap { margin-bottom: 2rem; }
+.sig-hint { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+canvas#sig { width: 100%; height: 170px; border: 1px solid var(--border); border-radius: 4px; background: var(--surface); cursor: crosshair; touch-action: none; display: block; }
+.sig-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 8px; }
+.sig-status { font-size: 11px; color: var(--muted); }
+.sig-status.signed { color: var(--cyan); }
+.clear-btn { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); background: none; border: none; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.error { font-size: 12px; color: #ff6b6b; margin-top: 6px; display: none; }
+.submit-btn { width: 100%; height: 54px; background: var(--cyan); color: var(--black); border: none; border-radius: 4px; font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.1em; cursor: pointer; transition: opacity 0.15s; }
+.submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.success-screen { display: none; text-align: center; padding: 4rem 1rem; }
+.success-mark { width: 64px; height: 64px; border-radius: 50%; background: var(--cyan-dim); border: 2px solid var(--cyan); display: flex; align-items: center; justify-content: center; margin: 0 auto 1.5rem; }
+.success-mark svg { width: 28px; height: 28px; }
+.success-name { font-family: 'Bebas Neue', sans-serif; font-size: 32px; letter-spacing: 0.06em; color: var(--text); margin-bottom: 0.5rem; }
+.success-text { font-size: 14px; color: var(--muted); line-height: 1.7; }
+.success-text span { color: var(--cyan); }
+@media (max-width: 460px) { .field-grid { grid-template-columns: 1fr; } .logo { font-size: 30px; } }
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="header">
+    <div class="logo">CARBON<span>CORE</span></div>
+    <div class="tagline">Control the Change</div>
+    <div class="doc-title">Информирано съгласие</div>
+  </div>
+  <div id="form-content">
+    <div class="section-label">Лични данни</div>
+    <div class="field-grid">
+      <div><label for="ime">Три имена</label><input type="text" id="ime" placeholder="Иван Иванов" autocomplete="name" /></div>
+      <div><label for="grad">Град</label><input type="text" id="grad" placeholder="София" /></div>
+    </div>
+    <div class="field-full"><label for="tel">Телефонен номер</label><input type="tel" id="tel" placeholder="+359 88 888 8888" autocomplete="tel" /></div>
+    <div class="divider"></div>
+    <div class="section-label">Декларация</div>
+    <div class="declaration-box">
+      <ol>
+        <li>Декларирам, че съм в добро здравословно състояние, не страдам от остри/хронични заболявания или психически заболявания, за които да са налице медицински противопоказания.</li>
+        <li>Запознат/а съм и осъзнавам, че нося изцяло отговорност за декларираното от мен здравословно състояние.</li>
+        <li>Съзнавам, че тренировките са високоинтензивни и неправилната употреба на уредите може да доведе до травми или други неблагоприятни последствия.</li>
+        <li>Декларирам, че при използване на уредите под ръководството на инструктор ще спазвам всички дадени от него указания по време на тренировката.</li>
+        <li>Декларирам, че при използване на уредите под ръководството на инструктор, в случай на неизпълнение на неговите указания от моя страна и самоволно предприемане на други действия, освобождавам от отговорност дружеството, неговите служители, търговски представители, правоприемници, дъщерни дружества и свързани лица в случай на настъпване на гореизброените рискове.</li>
+      </ol>
+    </div>
+    <div class="divider"></div>
+    <div class="section-label">Подпис и дата</div>
+    <div class="sig-wrap">
+      <div class="sig-hint">Подпишете с пръст или мишка</div>
+      <canvas id="sig"></canvas>
+      <div class="sig-footer">
+        <span class="sig-status" id="sig-status">Все още без подпис</span>
+        <button class="clear-btn" onclick="clearSig()">Изчисти</button>
+      </div>
+      <div class="error" id="sig-err">Моля, добавете подпис.</div>
+    </div>
+    <div class="field-full"><label for="date">Дата</label><input type="date" id="date" /></div>
+    <div class="divider"></div>
+    <button class="submit-btn" id="submit-btn" onclick="submitForm()">Потвърди и изпрати</button>
+  </div>
+  <div class="success-screen" id="success-screen">
+    <div class="success-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#00e5cc" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <div class="success-name" id="success-name"></div>
+    <div class="success-text">Декларацията е записана успешно.<br><span>Добре дошли в CarbonCore!</span></div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL = 'https://kqbbcaramzpxejzdfjoe.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtxYmJjYXJhbXpweGVqemRmam9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE3NzM4ODgsImV4cCI6MjA5NzM0OTg4OH0.CIC7LhPslMTlF3jG9L1aeoh-32hKBIzmeyX0h1MjIiA';
+
+const DEKLARACIA = `1. Декларирам, че съм в добро здравословно състояние, не страдам от остри/хронични заболявания или психически заболявания, за които да са налице медицински противопоказания.
+2. Запознат/а съм и осъзнавам, че нося изцяло отговорност за декларираното от мен здравословно състояние.
+3. Съзнавам, че тренировките са високоинтензивни и неправилната употреба на уредите може да доведе до травми или други неблагоприятни последствия.
+4. Декларирам, че при използване на уредите под ръководството на инструктор ще спазвам всички дадени от него указания по време на тренировката.
+5. Декларирам, че при използване на уредите под ръководството на инструктор, в случай на неизпълнение на неговите указания от моя страна и самоволно предприемане на други действия, освобождавам от отговорност дружеството, неговите служители, търговски представители, правоприемници, дъщерни дружества и свързани лица в случай на настъпване на гореизброените рискове.`;
+
+const canvas = document.getElementById('sig');
+const ctx = canvas.getContext('2d');
+let drawing = false, hasSig = false;
+
+function resizeCanvas() {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = Math.round(rect.width * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  ctx.scale(dpr, dpr);
+  ctx.strokeStyle = '#00e5cc';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+}
+resizeCanvas();
+window.addEventListener('resize', () => { hasSig = false; resizeCanvas(); });
+
+function getPos(e) {
+  const rect = canvas.getBoundingClientRect();
+  const src = e.touches ? e.touches[0] : e;
+  return { x: src.clientX - rect.left, y: src.clientY - rect.top };
+}
+
+function setStatus(signed) {
+  const s = document.getElementById('sig-status');
+  s.textContent = signed ? 'Подписано ✓' : 'Все още без подпис';
+  s.className = 'sig-status' + (signed ? ' signed' : '');
+}
+
+canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSig = true; setStatus(true); });
+canvas.addEventListener('mouseup', () => drawing = false);
+canvas.addEventListener('mouseleave', () => drawing = false);
+canvas.addEventListener('touchstart', e => { e.preventDefault(); drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); }, { passive: false });
+canvas.addEventListener('touchmove', e => { e.preventDefault(); if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); hasSig = true; setStatus(true); }, { passive: false });
+canvas.addEventListener('touchend', () => drawing = false);
+
+function clearSig() { ctx.clearRect(0, 0, canvas.width, canvas.height); hasSig = false; setStatus(false); }
+
+document.getElementById('date').value = new Date().toISOString().split('T')[0];
+
+async function submitForm() {
+  const ime = document.getElementById('ime').value.trim();
+  const grad = document.getElementById('grad').value.trim();
+  const tel = document.getElementById('tel').value.trim();
+  const data = document.getElementById('date').value;
+  const sigErr = document.getElementById('sig-err');
+  const btn = document.getElementById('submit-btn');
+
+  if (!ime || !grad || !tel) { alert('Моля, попълнете всички полета.'); return; }
+  if (!hasSig) { sigErr.style.display = 'block'; return; } else { sigErr.style.display = 'none'; }
+
+  btn.disabled = true;
+  btn.textContent = 'Изпращане...';
+
+  const podpis = canvas.toDataURL('image/png');
+
+  let ip = 'неизвестен';
+  try { const ipRes = await fetch('https://api.ipify.org?format=json'); const ipData = await ipRes.json(); ip = ipData.ip; } catch(e) {}
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/sasie`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_KEY,
+        'Authorization': `Bearer ${SUPABASE_KEY}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({ ime, grad, tel, data, podpis, deklaracia: DEKLARACIA, ip })
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.error('Supabase error:', err);
+      alert('Грешка при записване. Опитайте отново.');
+      btn.disabled = false;
+      btn.textContent = 'Потвърди и изпрати';
+      return;
+    }
+  } catch(err) {
+    console.error(err);
+    alert('Грешка при свързване. Опитайте отново.');
+    btn.disabled = false;
+    btn.textContent = 'Потвърди и изпрати';
+    return;
+  }
+
+  document.getElementById('form-content').style.display = 'none';
+  document.getElementById('success-screen').style.display = 'block';
+  document.getElementById('success-name').textContent = ime;
+}
+</script>
+</body>
+</html>
